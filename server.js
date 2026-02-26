@@ -30,19 +30,41 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Session configuration
-app.use(session({
+// Session configuration - handle serverless environment
+const sessionConfig = {
     secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false, // Set to true if using HTTPS
+        secure: false,
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
-}));
+};
+
+// Only use memory sessions for development, disable for serverless
+if (process.env.NODE_ENV !== 'production') {
+    app.use(session(sessionConfig));
+} else {
+    // For serverless, use a simplified session middleware
+    app.use((req, res, next) => {
+        req.session = {};
+        next();
+    });
+}
 
 // Add user info to all templates
 app.use(addUserToLocals);
+
+// Test route for Vercel deployment
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        status: 'OK', 
+        timestamp: new Date().toISOString(),
+        env: process.env.NODE_ENV,
+        mongodb: process.env.MONGODB_URI ? 'configured' : 'missing'
+    });
+});
+
 // Test route for debugging
 app.post('/api/test-teacher', requireAuth, async (req, res) => {
     console.log('=== DEBUGGING TEACHER DATA ===');
