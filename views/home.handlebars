@@ -1,0 +1,107 @@
+{{#if showStudents}}
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-users"></i>
+        <h3>{{title}}</h3>
+    </div>
+    
+    {{#if error}}
+    <div class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i> {{error}}
+    </div>
+    {{/if}}
+    
+    {{#if students.length}}
+        <div class="students-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-user"></i> Name</th>
+                        <th><i class="fas fa-birthday-cake"></i> Age</th>
+                        <th><i class="fas fa-book"></i> Major</th>
+                        <th><i class="fas fa-chart-line"></i> GPA</th>
+                        <th><i class="fas fa-envelope"></i> Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each students}}
+                    <tr>
+                        <td>{{this.name}}</td>
+                        <td>{{this.age}}</td>
+                        <td>{{this.major}}</td>
+                        <td>{{this.gpa}}</td>
+                        <td>{{this.email}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="margin-top: 2rem; text-align: center;">
+            <a href="/manage" class="btn btn-warning">
+                <i class="fas fa-cogs"></i> Manage Students
+            </a>
+        </div>
+    {{else}}
+        <div class="empty-state">
+            <i class="fas fa-user-plus"></i>
+            <h3>No students found</h3>
+            <p>Start by adding some students to the system.</p>
+            <a href="/manage" class="btn btn-success">
+                <i class="fas fa-plus"></i> Add Students
+            </a>
+        </div>
+    {{/if}}
+    
+    <div style="margin-top: 2rem;">
+        <a href="/" class="btn"><i class="fas fa-home"></i> Back to Dashboard</a>
+    </div>
+</div>
+{{else}}
+<div class="welcome-banner">
+    <h2>Welcome to Student Portal!</h2>
+</div>
+
+<div class="stats">
+    <div class="stat-card">
+        <div class="stat-number">{{studentCount}}</div>
+        <div class="stat-label">Total Students</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{avgGPA}}</div>
+        <div class="stat-label">Average GPA</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{teacherCount}}</div>
+        <div class="stat-label">Total Teachers</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{avgExperience}}</div>
+        <div class="stat-label">Avg Experience (Years)</div>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-users"></i>
+            <h3>Student Management</h3>
+        </div>
+        <p>Add, edit, and manage student information, records, and academic data.</p>
+        <br>
+        <a href="/students" class="btn"><i class="fas fa-eye"></i> View Students</a>
+        <a href="/manage" class="btn btn-success"><i class="fas fa-cogs"></i> Manage Students</a>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-chalkboard-teacher"></i>
+            <h3>Teacher Management</h3>
+        </div>
+        <p>Add, edit, and manage teacher information, subjects, and department data.</p>
+        <br>
+        <a href="/teachers" class="btn"><i class="fas fa-eye"></i> View Teachers</a>
+        <a href="/manage-teachers" class="btn btn-success"><i class="fas fa-cogs"></i> Manage Teachers</a>
+    </div>
+</div>
+{{/if}}

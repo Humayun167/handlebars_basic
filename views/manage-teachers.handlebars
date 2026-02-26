@@ -1,0 +1,794 @@
+<div class="card">
+    <div class="card-header">
+        <div class="header-content">
+            <div class="header-title">
+                <h2><i class="fas fa-chalkboard-teacher"></i> Teacher Management</h2>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-success btn-prominent" onclick="openAddModal()">
+                    <i class="fas fa-plus"></i> Add New Teacher
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    {{#if error}}
+    <div class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i> {{error}}
+    </div>
+    {{/if}}
+    
+    <div id="alert-container"></div>
+    
+    <!-- Statistics -->
+    <div class="dashboard-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{teacherCount}}</div>
+            <div class="stat-label">Total Teachers</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number"> ৳{{avgSalary}}</div>
+            <div class="stat-label">Average Salary</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{avgExperience}}</div>
+            <div class="stat-label">Avg Experience (Years)</div>
+        </div>
+    </div>
+    
+    <!-- Teachers Table -->
+    {{#if teachers.length}}
+    <div class="teachers-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Subject</th>
+                    <th>Department</th>
+                    <th>Experience</th>
+                    <th>Salary</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each teachers}}
+                <tr id="teacher-{{this._id}}">
+                    <td>{{this.name}}</td>
+                    <td>{{this.age}}</td>
+                    <td>{{this.subject}}</td>
+                    <td>{{this.department}}</td>
+                    <td>{{this.experience}} years</td>
+                    <td>৳{{this.salary}}</td>
+                    <td>{{this.email}}</td>
+                    <td>{{this.phone}}</td>
+                    <td>
+                        <button class="btn btn-small" onclick="editTeacher('{{this._id}}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteTeacher('{{this._id}}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+    {{else}}
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="fas fa-user-plus"></i>
+        </div>
+        <h3>No teachers found</h3>
+        <p>Start by adding some teachers to the system.</p>
+        <div class="empty-actions">
+            <button class="btn btn-success btn-large" onclick="openAddModal()">
+                <i class="fas fa-plus"></i> Add Your First Teacher
+            </button>
+        </div>
+    </div>
+    {{/if}}
+    
+    <div style="margin-top: 2rem;">
+        <a href="/" class="btn"><i class="fas fa-home"></i> Back to Dashboard</a>
+    </div>
+</div>
+
+<!-- Teacher Modal -->
+<div id="teacherModal" class="modal" style="display: none;">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">Add New Teacher</h3>
+            <button type="button" class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <form id="teacherForm">
+                <input type="hidden" id="teacherId" name="teacherId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" name="age" min="22" max="80" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">Subject:</label>
+                        <input type="text" id="subject" name="subject" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="department">Department:</label>
+                        <select id="department" name="department" required>
+                            <option value="">Select Department</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Chemistry">Chemistry</option>
+                            <option value="Biology">Biology</option>
+                            <option value="English">English</option>
+                            <option value="History">History</option>
+                            <option value="Business">Business</option>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Art">Art</option>
+                            <option value="Music">Music</option>
+                            <option value="Physical Education">Physical Education</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="experience">Experience (years):</label>
+                        <input type="number" id="experience" name="experience" min="0" max="50" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="salary">Salary ($):</label>
+                        <input type="number" id="salary" name="salary" min="20000" max="200000" step="1000" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone:</label>
+                        <input type="tel" id="phone" name="phone" placeholder="(123) 456-7890" required>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Save Teacher
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+let isEditing = false;
+
+function showAlert(message, type) {
+    const alertContainer = document.getElementById('alert-container');
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+    const icon = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+    
+    alertContainer.innerHTML = `
+        <div class="alert ${alertClass}">
+            <i class="${icon}"></i> ${message}
+        </div>
+    `;
+    
+    // Auto-hide alert after 3 seconds
+    setTimeout(() => {
+        alertContainer.innerHTML = '';
+    }, 3000);
+}
+
+function openAddModal() {
+    const modal = document.getElementById('teacherModal');
+    const form = document.getElementById('teacherForm');
+    const title = document.getElementById('modalTitle');
+    
+    form.reset();
+    title.textContent = 'Add New Teacher';
+    isEditing = false;
+    modal.style.display = 'flex';
+    
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+    
+    // Focus on first input
+    setTimeout(() => {
+        document.getElementById('name').focus();
+    }, 100);
+}
+
+function closeModal() {
+    const modal = document.getElementById('teacherModal');
+    modal.style.display = 'none';
+    isEditing = false;
+    
+    // Restore body scroll
+    document.body.style.overflow = 'auto';
+}
+
+async function editTeacher(teacherId) {
+    try {
+        const response = await fetch(`/api/teachers/${teacherId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            const teacher = data.teacher;
+            const modal = document.getElementById('teacherModal');
+            const title = document.getElementById('modalTitle');
+            
+            // Populate form with teacher data
+            document.getElementById('teacherId').value = teacher._id;
+            document.getElementById('name').value = teacher.name;
+            document.getElementById('age').value = teacher.age;
+            document.getElementById('subject').value = teacher.subject;
+            document.getElementById('department').value = teacher.department;
+            document.getElementById('experience').value = teacher.experience;
+            document.getElementById('salary').value = teacher.salary;
+            document.getElementById('email').value = teacher.email;
+            document.getElementById('phone').value = teacher.phone;
+            
+            title.textContent = 'Edit Teacher';
+            isEditing = true;
+            modal.style.display = 'flex';
+            
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        } else {
+            showAlert('Error fetching teacher: ' + data.message, 'error');
+        }
+    } catch (error) {
+        showAlert('Error fetching teacher: ' + error.message, 'error');
+    }
+}
+
+async function deleteTeacher(teacherId) {
+    if (!confirm('Are you sure you want to delete this teacher?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/teachers/${teacherId}`, {
+            method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('Teacher deleted successfully', 'success');
+            
+            // Remove row from table
+            const row = document.getElementById(`teacher-${teacherId}`);
+            if (row) {
+                row.remove();
+            }
+            
+            // Refresh page to update statistics
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            showAlert('Error deleting teacher: ' + data.message, 'error');
+        }
+    } catch (error) {
+        showAlert('Error deleting teacher: ' + error.message, 'error');
+    }
+}
+
+// Form submission
+document.getElementById('teacherForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const teacherData = {
+        name: formData.get('name'),
+        age: parseInt(formData.get('age')),
+        subject: formData.get('subject'),
+        department: formData.get('department'),
+        experience: parseInt(formData.get('experience')),
+        salary: parseFloat(formData.get('salary')),
+        email: formData.get('email'),
+        phone: formData.get('phone')
+    };
+    
+    // Debug logging
+    console.log('=== FRONTEND DEBUG ===');
+    console.log('Form data being sent:', teacherData);
+    console.log('Raw form values:');
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}: "${value}"`);
+    }
+    
+    try {
+        let url = '/api/teachers';
+        let method = 'POST';
+        
+        if (isEditing) {
+            url = `/api/teachers/${document.getElementById('teacherId').value}`;
+            method = 'PUT';
+        }
+        
+        console.log('Making request to:', url);
+        console.log('Method:', method);
+        
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(teacherData)
+        });
+        
+        console.log('Response status:', response.status);
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (data.success) {
+            showAlert(data.message, 'success');
+            closeModal();
+            
+            // Refresh page to show updated data
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            // Handle authentication errors
+            if (response.status === 401) {
+                showAlert('Session expired. Redirecting to login...', 'error');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
+            } else {
+                showAlert('Error: ' + data.message, 'error');
+            }
+        }
+    } catch (error) {
+        console.error('Frontend error:', error);
+        showAlert('Error: ' + error.message, 'error');
+    }
+});
+
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+    const modal = document.getElementById('teacherModal');
+    const overlay = event.target.classList.contains('modal') || event.target.classList.contains('modal-overlay');
+    
+    if (overlay) {
+        closeModal();
+    }
+}
+
+// Keyboard shortcuts for modal
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const modal = document.getElementById('teacherModal');
+        if (modal.style.display === 'flex') {
+            closeModal();
+        }
+    }
+});
+</script>
+
+<style>
+/* Header Layout Styling */
+.card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    margin: -1rem -1rem 1.5rem -1rem;
+    border-radius: 8px 8px 0 0;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.header-title h2 {
+    margin: 0;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+}
+
+.btn-prominent {
+    background: #28a745 !important;
+    color: white !important;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-prominent:hover {
+    background: #218838 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.btn-prominent:active {
+    transform: translateY(0);
+}
+
+.btn-prominent i {
+    margin-right: 0.5rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .header-title h2 {
+        font-size: 1.3rem;
+        justify-content: center;
+    }
+    
+    .btn-prominent {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.95rem;
+        width: 100%;
+        max-width: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-title h2 {
+        font-size: 1.1rem;
+    }
+    
+    .btn-prominent {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Empty State Styling */
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin: 2rem 0;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #6c757d;
+    margin-bottom: 2rem;
+}
+
+.empty-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.btn-large {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Modal Responsive Styling */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+}
+
+.modal-content {
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e9ecef;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select {
+    padding: 0.75rem;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: #fff;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group input:invalid,
+.form-group select:invalid {
+    border-color: #dc3545;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.form-actions .btn {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 120px;
+}
+
+.form-actions .btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.form-actions .btn-success:hover {
+    background: #218838;
+    transform: translateY(-1px);
+}
+
+.form-actions .btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.form-actions .btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 768px) {
+    .modal {
+        padding: 0.5rem;
+        align-items: stretch;
+    }
+    
+    .modal-content {
+        max-height: 100vh;
+        border-radius: 0;
+        height: 100%;
+    }
+    
+    .modal-header {
+        padding: 1rem 1.5rem;
+        border-radius: 0;
+    }
+    
+    .modal-header h3 {
+        font-size: 1.3rem;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .form-actions {
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal {
+        padding: 0;
+    }
+    
+    .modal-content {
+        border-radius: 0;
+    }
+    
+    .modal-header {
+        padding: 1rem;
+    }
+    
+    .modal-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+    
+    .form-grid {
+        gap: 0.75rem;
+    }
+    
+    .form-group input,
+    .form-group select {
+        padding: 0.6rem;
+        font-size: 0.95rem;
+    }
+    
+    .modal-close {
+        width: 35px;
+        height: 35px;
+        font-size: 1.2rem;
+    }
+}
+
+/* Landscape orientation adjustments */
+@media (max-height: 600px) and (orientation: landscape) {
+    .modal {
+        align-items: flex-start;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    .modal-content {
+        max-height: 95vh;
+    }
+    
+    .modal-header {
+        padding: 1rem 1.5rem;
+    }
+    
+    .modal-body {
+        padding: 1rem 1.5rem;
+    }
+    
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+</style>
