@@ -2,6 +2,7 @@ require('dotenv').config();
 const {create} = require('express-handlebars');
 const express = require('express');
 const session = require('express-session');
+const path = require('path');
 const connectDB = require('./config/database');
 const Student = require('./models/Student');
 const Teacher = require('./models/Teacher');
@@ -22,7 +23,8 @@ app.engine("handlebars", hbs.engine);
 
 app.set("view engine", "handlebars");
 
-app.set("views", "./views");
+// Set views directory with absolute path for Vercel
+app.set("views", path.join(__dirname, "views"));
 
 // Middleware to parse JSON and URL encoded data
 app.use(express.json());

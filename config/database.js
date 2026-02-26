@@ -1,14 +1,24 @@
 const mongoose = require('mongoose');
 
-// MongoDB connection configuration
+// MongoDB connection configuration optimized for serverless
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(process.env.MONGODB_URI );
+        // Check if already connected
+        if (mongoose.connections[0].readyState) {
+            return;
+        }
+        
+        const conn = await mongoose.connect(process.env.MONGODB_URI, {
+            bufferCommands: false,
+            bufferMaxEntries: 0,
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
         
         console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
         console.error('Error connecting to MongoDB:', error.message);
-        process.exit(1);
+        throw error; // Don't exit process in serverless environment
     }
 };
 
